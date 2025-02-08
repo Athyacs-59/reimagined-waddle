@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Music Recommender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .card a {
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Personalized Music Recommender</h1>
+        <input type="text" id="mood" placeholder="Enter your mood or activity (e.g., happy, sad, workout)">
+        <button onclick="recommendMusic()">Find Music</button>
+        <div id="recommendations"></div>
+    </div>
+
+    <script>
+        async function recommendMusic() {
+            const mood = document.getElementById("mood").value.toLowerCase();
+            const recommendationsDiv = document.getElementById("recommendations");
+            recommendationsDiv.innerHTML = "";
+            
+            try {
+                const response = await fetch(`https://api.deezer.com/search?q=${mood}`);
+                const data = await response.json();
+                
+                if (data.data.length > 0) {
+                    data.data.slice(0, 5).forEach(song => {
+                        const songElement = document.createElement("div");
+                        songElement.classList.add("card");
+                        songElement.innerHTML = `<h2>${song.title}</h2><p>${song.artist.name}</p><a href="${song.link}" target="_blank">Listen</a>`;
+                        recommendationsDiv.appendChild(songElement);
+                    });
+                } else {
+                    recommendationsDiv.innerHTML = "<p>No recommendations found. Try another mood or activity!</p>";
+                }
+            } catch (error) {
+                recommendationsDiv.innerHTML = "<p>Error fetching music recommendations. Please try again later.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
